@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         card.className = 'grid-card-interactive';
         card.setAttribute('aria-label', `Projet ${project.title}`);
         card.innerHTML = `
-            <img src="${project.image}" alt="${project.alt || project.title}" class="grid-card-photo">
+            <img src="${project.image}" alt="${project.alt || project.title}" class="grid-card-photo" loading="lazy" decoding="async">
             <div class="grid-card-glass-hover">
                 <h3>${project.title}</h3>
                 <p>${project.description}</p>
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         card.href = project.url;
         card.className = 'other-project-card';
         card.setAttribute('aria-label', `Voir projet ${project.title}`);
-        card.innerHTML = `<img src="${project.image}" alt="${project.alt || project.title}">`;
+        card.innerHTML = `<img src="${project.image}" alt="${project.alt || project.title}" loading="lazy" decoding="async">`;
         return card;
     }
 
