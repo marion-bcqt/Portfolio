@@ -139,17 +139,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- INJECTION DYNAMIQUE DES SUGGESTIONS (pages individuelles) ---
     const otherProjectsGrid = document.querySelector('.other-projects-grid');
     if (otherProjectsGrid) {
-        const currentFile = window.location.pathname.split('/').pop() || 'index.html';
+        let currentFile = window.location.pathname.split('/').pop() || 'index.html';
+        currentFile = currentFile.split('?')[0].split('#')[0];
 
-        // Filtrer les projets pour exclure celui de la page actuelle
-        const suggestions = PORTFOLIO_PROJECTS.filter(project => {
-            if (currentFile === 'audiovisuel.html') {
-                return project.url !== 'audiovisuel.html';
+        // Trouver l'index du projet actuel dans l'ordre de l'accueil (PORTFOLIO_PROJECTS)
+        const currentIndex = PORTFOLIO_PROJECTS.findIndex(project => project.url.toLowerCase() === currentFile.toLowerCase());
+
+        // Récupérer les 3 projets suivants dans l'ordre de l'accueil (boucle circulaire)
+        const nextSuggestions = [];
+        if (currentIndex !== -1) {
+            for (let i = 1; i <= 3; i++) {
+                const nextIndex = (currentIndex + i) % PORTFOLIO_PROJECTS.length;
+                nextSuggestions.push(PORTFOLIO_PROJECTS[nextIndex]);
             }
-            return project.url !== currentFile;
-        });
+        } else {
+            nextSuggestions.push(...PORTFOLIO_PROJECTS.slice(0, 3));
+        }
 
-        // Limité exactement aux 3 projets les plus récents
         function renderSuggestions(listToRender) {
             otherProjectsGrid.innerHTML = '';
             listToRender.forEach(project => {
@@ -157,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        renderSuggestions(suggestions.slice(0, 3));
+        renderSuggestions(nextSuggestions);
 
         // Recherche dédiée sur la grille de suggestions
         const suggestionSearchInput = document.querySelector('.other-projects-section .project-search-input');
@@ -167,10 +173,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 let matchCount = 0;
 
                 if (query === '') {
-                    renderSuggestions(suggestions.slice(0, 3));
-                    matchCount = 3;
+                    renderSuggestions(nextSuggestions);
+                    matchCount = nextSuggestions.length;
                 } else {
-                    const filtered = suggestions.filter(p => {
+                    const allOtherProjects = PORTFOLIO_PROJECTS.filter(p => p.url.toLowerCase() !== currentFile.toLowerCase());
+                    const filtered = allOtherProjects.filter(p => {
                         const title = (p.title || '').toLowerCase();
                         const desc = (p.description || '').toLowerCase();
                         const alt = (p.alt || '').toLowerCase();
