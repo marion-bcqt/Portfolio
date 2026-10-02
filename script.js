@@ -139,11 +139,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- INJECTION DYNAMIQUE DES SUGGESTIONS (pages individuelles) ---
     const otherProjectsGrid = document.querySelector('.other-projects-grid');
     if (otherProjectsGrid) {
-        let currentFile = window.location.pathname.split('/').pop() || 'index.html';
-        currentFile = currentFile.split('?')[0].split('#')[0];
+        // Détecter le projet actuel de manière infaillible (titre H1, URL, slug, avec ou sans .html)
+        const pageTitleElem = document.querySelector('.project-hero-info .project-title, .project-title');
+        const pageTitle = pageTitleElem ? pageTitleElem.textContent.trim().toLowerCase() : '';
 
-        // Trouver l'index du projet actuel dans l'ordre de l'accueil (PORTFOLIO_PROJECTS)
-        const currentIndex = PORTFOLIO_PROJECTS.findIndex(project => project.url.toLowerCase() === currentFile.toLowerCase());
+        const pathname = decodeURIComponent(window.location.pathname).toLowerCase();
+        let filename = pathname.split('/').filter(Boolean).pop() || '';
+        filename = filename.split('?')[0].split('#')[0];
+        const slug = filename.replace(/\.html$/, '');
+
+        let currentIndex = PORTFOLIO_PROJECTS.findIndex(project => {
+            const pTitle = project.title.toLowerCase();
+            const pUrl = project.url.toLowerCase();
+            const pSlug = pUrl.replace(/\.html$/, '');
+
+            if (pageTitle && (pageTitle === pTitle || pageTitle.includes(pTitle) || pTitle.includes(pageTitle))) {
+                return true;
+            }
+            if (filename && (filename === pUrl || filename === pSlug || slug === pSlug)) {
+                return true;
+            }
+            return pathname.includes(pUrl) || (pSlug && pathname.includes(pSlug));
+        });
 
         // Récupérer les 3 projets suivants dans l'ordre de l'accueil (boucle circulaire)
         const nextSuggestions = [];
@@ -153,7 +170,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 nextSuggestions.push(PORTFOLIO_PROJECTS[nextIndex]);
             }
         } else {
-            nextSuggestions.push(...PORTFOLIO_PROJECTS.slice(0, 3));
+            const others = PORTFOLIO_PROJECTS.filter(p => !pathname.includes(p.url.replace(/\.html$/, '')));
+            nextSuggestions.push(...(others.length >= 3 ? others.slice(0, 3) : PORTFOLIO_PROJECTS.slice(0, 3)));
         }
 
         function renderSuggestions(listToRender) {
@@ -176,7 +194,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderSuggestions(nextSuggestions);
                     matchCount = nextSuggestions.length;
                 } else {
-                    const allOtherProjects = PORTFOLIO_PROJECTS.filter(p => p.url.toLowerCase() !== currentFile.toLowerCase());
+                    const allOtherProjects = currentIndex !== -1 
+                        ? PORTFOLIO_PROJECTS.filter((_, idx) => idx !== currentIndex)
+                        : PORTFOLIO_PROJECTS;
                     const filtered = allOtherProjects.filter(p => {
                         const title = (p.title || '').toLowerCase();
                         const desc = (p.description || '').toLowerCase();
