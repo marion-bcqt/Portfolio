@@ -23,6 +23,14 @@
 
 const PORTFOLIO_PROJECTS = [
     {
+        id: "homme",
+        title: "Shooting Homme Solo",
+        url: "shooting-homme.html",
+        image: "assets/homme/principal.jpg",
+        alt: "Shooting Homme Solo",
+        description: "Séance shooting portrait masculin en solo, capturant l'authenticité et le caractère à travers la lumière naturelle."
+    },
+    {
         id: "canin",
         title: "Portrait Canin",
         url: "shooting-dog.html",
