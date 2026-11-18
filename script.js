@@ -23,12 +23,12 @@
 
 const PORTFOLIO_PROJECTS = [
     {
-        id: "homme",
-        title: "Shooting Homme Solo",
-        url: "shooting-homme.html",
-        image: "assets/homme/principal.jpg",
-        alt: "Shooting Homme Solo",
-        description: "Séance shooting portrait masculin en solo, capturant l'authenticité et le caractère à travers la lumière naturelle."
+        id: "noan",
+        title: "Portrait Studio",
+        url: "shooting-Noan.html",
+        image: "assets/Noan/principal.jpg",
+        alt: "Portrait Studio - Noan",
+        description: "Séance shooting portrait masculin en solo de Noan réalisée en studio, capturant l'authenticité et le caractère du modèle."
     },
     {
         id: "canin",
